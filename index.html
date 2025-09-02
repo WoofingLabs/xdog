@@ -515,8 +515,8 @@
                         <span class="zh hidden">铸造您的XDOG域名</span>
                     </h2>
                     <p class="text-gray-400 max-w-2xl mx-auto">
-                        <span class="en">Create and manage your unique .xdog domain NFT on X Layer</span>
-                        <span class="zh hidden">在X Layer上创建和管理您独特的.xdog域名NFT</span>
+                        <span class="en">Create and manage your unique .xdog or .okx domain NFT on X Layer</span>
+                        <span class="zh hidden">在X Layer上创建和管理您独特的.xdog或.okx域名NFT</span>
                     </p>
                 </div>
                 <div class="bg-dark-light rounded-2xl p-6 md:p-10 border border-primary/20 max-w-4xl mx-auto">
@@ -548,6 +548,7 @@
                         </h3>
                         <div class="flex flex-col sm:flex-row gap-4 mb-6">
                             <button class="toggle-button active px-6 py-3 rounded-lg bg-primary/10 border border-primary/30 hover:bg-primary/20 transition-colors" onclick="selectDomain('xdog')" id="xdogButton">.xdog</button>
+                            <button class="toggle-button px-6 py-3 rounded-lg bg-primary/10 border border-primary/30 hover:bg-primary/20 transition-colors" onclick="selectDomain('okx')" id="okxButton">.okx</button>
                         </div>
                         <input type="text" id="domainId" placeholder="Enter domain ID (e.g., jace123)" class="w-full p-4 rounded-lg bg-dark border border-primary/30 text-gray-300 mb-4" oninput="convertToHex()">
                         <div class="bg-dark rounded-lg p-4 border border-primary/30 mb-4">
@@ -584,12 +585,12 @@
                         </h3>
                         <ul class="space-y-3 text-gray-300 text-sm">
                             <li>
-                                <span class="en"><strong>Connect Your Wallet</strong>: Use MetaMask to connect to X Layer (chain ID: 196). Ensure enough OKB for gas fees.</span>
-                                <span class="zh hidden"><strong>连接您的钱包</strong>：使用MetaMask连接到X Layer（链ID：196）。确保有足够的OKB支付燃气费。</span>
+                                <span class="en"><strong>Connect Your Wallet</strong>: Use MetaMask to connect to X Layer (chain ID: 196). Ensure enough ETH for gas fees.</span>
+                                <span class="zh hidden"><strong>连接您的钱包</strong>：使用MetaMask连接到X Layer（链ID：196）。确保有足够的ETH支付燃气费。</span>
                             </li>
                             <li>
-                                <span class="en"><strong>Mint Domain</strong>: Enter a domain ID (1-15 alphanumeric characters) and mint your .xdog NFT.</span>
-                                <span class="zh hidden"><strong>铸造域名</strong>：输入域名ID（1-15个字母数字字符）并铸造您的.xdog NFT。</span>
+                                <span class="en"><strong>Mint Domain</strong>: Select .xdog or .okx, enter a domain ID (1-15 alphanumeric characters), and mint your NFT.</span>
+                                <span class="zh hidden"><strong>铸造域名</strong>：选择.xdog或.okx，输入域名ID（1-15个字母数字字符）并铸造您的NFT。</span>
                             </li>
                             <li>
                                 <span class="en"><strong>Manual Registration</strong>: Copy hex data and contract address for manual registration via wallet with 0 ETH and hex as msg.data.</span>
@@ -738,7 +739,7 @@
                         XDOG是一种仅用于娱乐目的的meme币。这不是财务建议。投资前请务必进行自己的研究。加密货币的价值可能会大幅波动。
                     </span>
                 </div>
-                <!-- Developer List Popup -->
+                                <!-- Developer List Popup -->
                 <div id="developerPopup" class="hidden fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-dark-light p-4 rounded-lg shadow-lg z-50 max-w-sm border border-gray-700">
                     <h4 class="font-display font-semibold text-lg mb-3">
                         <span class="en">Developer List</span>
@@ -1226,6 +1227,14 @@
                 currency: 'ETH',
                 name: 'XDog Inscription Domain Name',
                 symbol: 'DXDOG'
+            },
+            okx: {
+                address: '0xC3ad7bD7e434F4C1C023EbC6fe0AC4705e9518bC',
+                suffix: 'okx',
+                protocol: 'okxname',
+                currency: 'ETH',
+                name: 'OKX Inscription Domain Name',
+                symbol: 'DOKX'
             }
         };
 
@@ -1248,7 +1257,7 @@
 
         const xLayer = { chainId: 196, name: 'X Layer mainnet', explorerUrl: 'https://www.okx.com/web3/explorer/xlayer', rpcUrl: 'https://rpc.xlayer.tech' };
 
-                async function connectWallet() {
+        async function connectWallet() {
             const status = document.getElementById('networkStatus');
             try {
                 if (!window.ethereum) {
@@ -1294,10 +1303,12 @@
         function selectDomain(domain) {
             selectedDomain = domain;
             const xdogButton = document.getElementById('xdogButton');
+            const okxButton = document.getElementById('okxButton');
             const contractAddress = document.getElementById('contractAddress');
             const status = document.getElementById('mintStatus');
 
-            xdogButton.classList.add('active');
+            xdogButton.classList.toggle('active', domain === 'xdog');
+            okxButton.classList.toggle('active', domain === 'okx');
             contractAddress.textContent = contracts[domain].address;
 
             if (web3 && accounts) domainContract = new web3.eth.Contract(domainContractABI, contracts[domain].address);
@@ -1390,7 +1401,7 @@
         }
 
         async function mintDomain() {
-            const section = document.getElementById('mintDomain');
+            const section = document.getElementById('mint-domain');
             const status = document.getElementById('mintStatus');
             const domainId = document.getElementById('domainId').value.trim();
             if (!domainId || domainId.length > 15 || !/^[a-zA-Z0-9]+$/.test(domainId)) {
